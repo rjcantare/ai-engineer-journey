@@ -22,18 +22,21 @@ This is a build log of shipped systems.
 ---
 
 ## Repository Structure
+```
 ai-engineer-journey/
 │
-├── experiments/ # Sandbox testing & quick prototypes
-├── projects/ # Production-structured builds
-│ ├── 01-ai-chat-cli/ # OpenAI CLI Financial Classifier (Completed)
-│ ├── 02-lead-qualifier-api/
-│ ├── 03-pdf-extractor/
-│ └── 04-rag-chatbot/
+├── experiments/          # Sandbox testing & quick prototypes
+├── projects/             # Production-structured builds
+│   ├── 01-ai-chat-cli/   # OpenAI CLI Financial Classifier (Completed)
+│   ├── 02-lead-qualifier-api/
+│   ├── 03-pdf-extractor/
+│   └── 04-rag-chatbot/
 │
-├── notes/ # Technical notes & documentation
+├── notes/                # Technical notes & documentation
 ├── README.md
 └── .gitignore
+```
+
 
 
 ---
