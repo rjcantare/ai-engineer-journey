@@ -84,7 +84,7 @@ To:
 
 ## Status
 
-Day 1 — OpenAI integration
+Day 1 — OpenAI integration <br>
 Day 2 — Deterministic validation boundary
 
 System shipped and version-controlled.
