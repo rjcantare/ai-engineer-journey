@@ -1,7 +1,7 @@
 """
 CLI entry point for financial risk classification tool.
 """
-
+import json
 from prompt_templates import build_classification_prompt
 from openai_client import get_openai_response
 
@@ -24,10 +24,29 @@ def main() -> None:
         current_savings=current_savings
     )
 
-    result = get_openai_response(prompt)
+    raw_response = get_openai_response(prompt)
 
-    print("\n--- Financial Classification Result ---")
-    print(result)
+    try:
+        parsed = json.loads(raw_response)
+
+        category = parsed.get("category")
+        reason = parsed.get("reason")
+
+        if category not in ["HOT", "WARM", "COLD"]:
+            raise ValueError("Invalid category value.")
+
+        if not isinstance(reason, str) or len(reason.strip()) == 0:
+            raise ValueError("Invalid reason value.")
+
+    except (json.JSONDecodeError, ValueError, KeyError) as e:
+        print("\n❌ Model returned invalid structured output.")
+        print("Error:", str(e))
+        return
+
+    print("\n=== Classification Result ===")
+    print(f"Category : {category}")
+    print(f"Reason   : {reason}")
+    print("=============================\n")   
 
 
 if __name__ == "__main__":
