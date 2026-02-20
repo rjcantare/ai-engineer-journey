@@ -5,6 +5,39 @@ import json
 from prompt_templates import build_classification_prompt
 from openai_client import get_openai_response
 
+def validate_classification(raw_response: str) -> tuple[str, str]:
+    """
+    Validate and extract classification result from raw JSON string.
+    
+    Returns:
+        tuple[str, str]: (category, reason)
+    
+    Raises:
+        ValueError: If JSON is invalid or schema is incorrect.
+    """
+    try:
+        parsed = json.loads(raw_response)
+    except json.JSONDecodeError as e:
+        raise ValueError("Invalid JSON format.") from e
+
+    if not isinstance(parsed, dict):
+        raise ValueError("Response is not a JSON object.")
+
+    # Ensure only expected keys exist
+    expected_keys = {"category", "reason"}
+    if set(parsed.keys()) != expected_keys:
+        raise ValueError("JSON does not match required schema.")
+
+    category = parsed.get("category")
+    reason = parsed.get("reason")
+
+    if category not in ["HOT", "WARM", "COLD"]:
+        raise ValueError("Invalid category value.")
+
+    if not isinstance(reason, str) or len(reason.strip()) == 0:
+        raise ValueError("Invalid reason value.")
+
+    return category, reason
 
 def main() -> None:
     """
@@ -24,21 +57,11 @@ def main() -> None:
         current_savings=current_savings
     )
 
-    raw_response = get_openai_response(prompt)
+    raw_response = "INVALID"#get_openai_response(prompt)
 
     try:
-        parsed = json.loads(raw_response)
-
-        category = parsed.get("category")
-        reason = parsed.get("reason")
-
-        if category not in ["HOT", "WARM", "COLD"]:
-            raise ValueError("Invalid category value.")
-
-        if not isinstance(reason, str) or len(reason.strip()) == 0:
-            raise ValueError("Invalid reason value.")
-
-    except (json.JSONDecodeError, ValueError, KeyError) as e:
+        category, reason = validate_classification(raw_response)
+    except ValueError as e:
         print("\n❌ Model returned invalid structured output.")
         print("Error:", str(e))
         return
@@ -46,7 +69,7 @@ def main() -> None:
     print("\n=== Classification Result ===")
     print(f"Category : {category}")
     print(f"Reason   : {reason}")
-    print("=============================\n")   
+    print("=============================\n")
 
 
 if __name__ == "__main__":
