@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_openai_response(prompt: str) -> str:
+def get_openai_response(prompt: str) -> dict[str, object]:
     """
     Send a prompt to OpenAI and return the response text.
 
@@ -33,7 +33,20 @@ def get_openai_response(prompt: str) -> str:
         messages=[
             {"role": "user", "content": prompt}
         ],
-        temperature=0.2
+        temperature=0.0
     )
 
-    return response.choices[0].message.content.strip()
+    usage = response.usage
+
+    prompt_tokens = usage.prompt_tokens
+    completion_tokens = usage.completion_tokens
+    total_tokens = usage.total_tokens
+
+    return {
+    "content": response.choices[0].message.content,
+    "usage": {
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens
+    }   
+}

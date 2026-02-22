@@ -2,6 +2,7 @@
 CLI entry point for financial risk classification tool.
 """
 import json
+from unittest import result
 from prompt_templates import build_classification_prompt
 from openai_client import get_openai_response
 
@@ -57,7 +58,8 @@ def main() -> None:
         current_savings=current_savings
     )
 
-    raw_response = "INVALID"#get_openai_response(prompt)
+    result = get_openai_response(prompt)
+    raw_response = result["content"]
 
     try:
         category, reason = validate_classification(raw_response)
@@ -70,6 +72,12 @@ def main() -> None:
     print(f"Category : {category}")
     print(f"Reason   : {reason}")
     print("=============================\n")
+
+    print("\n--- Token Usage ---")
+    print(f"Prompt Tokens     : {result['usage']['prompt_tokens']}")
+    print(f"Completion Tokens : {result['usage']['completion_tokens']}")
+    print(f"Total Tokens      : {result['usage']['total_tokens']}")
+    print("-------------------\n")
 
 
 if __name__ == "__main__":
