@@ -20,34 +20,30 @@ def build_classification_prompt(
         str: Formatted prompt string.
     """
     prompt = f"""
-You are a conservative financial risk classifier.
+    You are a structured financial feature extraction engine.
 
-You MUST return ONLY valid JSON.
-Do NOT include explanations, markdown, code fences, or extra text.
-Do NOT include any keys other than those specified.
+    You MUST return ONLY valid JSON.
+    Do NOT include explanations, markdown, code fences, or extra text.
+    Do NOT include any keys other than those specified.
 
-Return strictly this JSON schema:
+    Return strictly this JSON schema:
 
-{{
-  "category": "HOT | WARM | COLD",
-  "reason": "One concise sentence explaining the classification."
-}}
+    {{
+    "risk_score": number (0-100),
+    "income_level": "low" | "medium" | "high",
+    "dependency_load": "low" | "moderate" | "high",
+    "savings_buffer": "low" | "moderate" | "high"
+    }}
 
-Rules:
-- category must be exactly one of: HOT, WARM, COLD
-- reason must be exactly one sentence
-- Output must be valid JSON
-- No text before or after the JSON object
+    Rules:
+    - risk_score must be an integer between 0 and 100
+    - Output must be valid JSON
+    - No text before or after the JSON object
 
-Classification Rules:
-- HOT = financially unstable / urgent protection needed
-- WARM = moderate stability but risk exists
-- COLD = financially stable and protected
-
-Client Data:
-Monthly Income: ₱{monthly_income}
-Dependents: {dependents}
-Current Savings: ₱{current_savings}
-"""
+    Client Data:
+    Monthly Income: ₱{monthly_income}
+    Dependents: {dependents}
+    Current Savings: ₱{current_savings}
+    """
 
     return prompt.strip()

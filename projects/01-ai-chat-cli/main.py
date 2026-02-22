@@ -2,43 +2,49 @@
 CLI entry point for financial risk classification tool.
 """
 import json
-from unittest import result
 from prompt_templates import build_classification_prompt
 from openai_client import get_openai_response
 
-def validate_classification(raw_response: str) -> tuple[str, str]:
-    """
-    Validate and extract classification result from raw JSON string.
-    
-    Returns:
-        tuple[str, str]: (category, reason)
-    
-    Raises:
-        ValueError: If JSON is invalid or schema is incorrect.
-    """
+def validate_features(raw_response: str) -> dict:
     try:
         parsed = json.loads(raw_response)
     except json.JSONDecodeError as e:
         raise ValueError("Invalid JSON format.") from e
 
-    if not isinstance(parsed, dict):
-        raise ValueError("Response is not a JSON object.")
+    required_keys = {
+        "risk_score",
+        "income_level",
+        "dependency_load",
+        "savings_buffer"
+    }
 
-    # Ensure only expected keys exist
-    expected_keys = {"category", "reason"}
-    if set(parsed.keys()) != expected_keys:
+    if set(parsed.keys()) != required_keys:
         raise ValueError("JSON does not match required schema.")
 
-    category = parsed.get("category")
-    reason = parsed.get("reason")
+    if not isinstance(parsed["risk_score"], int):
+        raise ValueError("risk_score must be integer.")
 
-    if category not in ["HOT", "WARM", "COLD"]:
-        raise ValueError("Invalid category value.")
+    if not 0 <= parsed["risk_score"] <= 100:
+        raise ValueError("risk_score must be between 0 and 100.")
 
-    if not isinstance(reason, str) or len(reason.strip()) == 0:
-        raise ValueError("Invalid reason value.")
+    return parsed
 
-    return category, reason
+def classify_risk(risk_score: int) -> str:
+    if risk_score >= 70:
+        return "HOT"
+    elif 40 <= risk_score <= 69:
+        return "WARM"
+    else:
+        return "COLD"
+    
+def generate_reason(features: dict, category: str) -> str:
+    return (
+        f"{category} — "
+        f"Risk score: {features['risk_score']}, "
+        f"Income level: {features['income_level']}, "
+        f"Dependency load: {features['dependency_load']}, "
+        f"Savings buffer: {features['savings_buffer']}"
+    )
 
 def main() -> None:
     """
@@ -62,11 +68,14 @@ def main() -> None:
     raw_response = result["content"]
 
     try:
-        category, reason = validate_classification(raw_response)
+        features = validate_features(raw_response)
     except ValueError as e:
         print("\n❌ Model returned invalid structured output.")
         print("Error:", str(e))
         return
+
+    category = classify_risk(features["risk_score"])
+    reason = generate_reason(features, category)
 
     print("\n=== Classification Result ===")
     print(f"Category : {category}")
