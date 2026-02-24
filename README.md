@@ -4,9 +4,9 @@ Building production-ready AI systems with deterministic architecture and control
 
 ---
 
-## About
+## 📌 About
 
-This repository documents my transition into becoming a Remote AI Engineer.
+This repository documents my transition into becoming a **Remote AI Engineer**.
 
 **Focus:** Designing reliable AI systems — not just calling APIs.
 
@@ -14,25 +14,27 @@ The goal is to treat LLMs as probabilistic components inside deterministic syste
 
 ---
 
-## Core Areas
+## 🧠 Core Areas
 
-* Python engineering
-* OpenAI API integrations
-* Deterministic LLM control
-* Structured output enforcement
-* Hybrid AI + rule-based engines
-* Token cost awareness
-* Clean architecture & Git discipline
+- Python engineering  
+- OpenAI API integrations  
+- Deterministic LLM control  
+- Structured output enforcement  
+- Hybrid AI + rule-based engines  
+- Token cost awareness  
+- Clean architecture & Git discipline  
+- Unit testing for business logic  
 
-This is a build log of shipped systems.
+This is a build log of shipped systems — not tutorials.
 
 ---
 
-## Repository Structure
+## 🗂 Repository Structure
 
 ```
+
 ai-engineer-journey/
-├── experiments/          
+├── experiments/
 ├── projects/
 │   ├── 01-ai-chat-cli/
 │   ├── 02-lead-qualifier-api/
@@ -40,28 +42,33 @@ ai-engineer-journey/
 │   └── 04-rag-chatbot/
 ├── notes/
 └── README.md
-```
+
+````
 
 ---
 
-# 01 – OpenAI CLI Financial Classifier (Shipped)
+# 🚀 01 – OpenAI CLI Financial Classifier (Shipped)
 
 A structured CLI tool integrating with the OpenAI API to classify financial stability.
 
 ---
 
-## Architectural Evolution
+## 🏗 Architectural Evolution
 
 ### Version 1 — Direct LLM Classification
 
 LLM returned:
 
-```
+```json
 { "category": "...", "reason": "..." }
-```
+````
 
-Risk:
-Business logic lived inside prompt.
+**Risk:**
+Business logic lived inside the prompt.
+
+* No deterministic enforcement
+* No boundary control
+* No regression safety
 
 ---
 
@@ -69,32 +76,35 @@ Business logic lived inside prompt.
 
 LLM now returns structured features only:
 
-```
+```json
 {
   "risk_score": int (0–100),
-  "income_level": enum,
-  "dependency_load": enum,
-  "savings_buffer": enum
+  "income_level": "low | medium | high",
+  "dependency_load": "low | moderate | high",
+  "savings_buffer": "low | moderate | high"
 }
 ```
 
 Python enforces classification deterministically:
 
 ```
->= 70 → HOT
-40–69 → WARM
-< 40 → COLD
+>= 70  → HOT
+40–69  → WARM
+< 40   → COLD
 ```
 
-LLM does not control:
+LLM does **not** control:
 
 * Final decision
 * Explanation logic
 * Boundary conditions
+* Business thresholds
+
+This creates a controlled hybrid system.
 
 ---
 
-## Current Architecture
+## 🧩 Current Architecture
 
 ```
 main.py              → CLI orchestration
@@ -103,11 +113,12 @@ prompt_templates.py  → Strict JSON feature extraction contract
 validate_features()  → Schema enforcement boundary
 classify_risk()      → Deterministic decision engine
 generate_reason()    → Deterministic explanation builder
+test_classifier.py   → Deterministic unit test safety net
 ```
 
 ---
 
-## Engineering Highlights
+## 🔍 Engineering Highlights
 
 * Deterministic temperature control (`temperature=0.0`)
 * Strict JSON-only LLM contract
@@ -115,14 +126,55 @@ generate_reason()    → Deterministic explanation builder
 * Hybrid AI + deterministic rule engine
 * Transparent feature-based explanations
 * Token usage monitoring
-* Boundary testing (69 vs 70 threshold)
-* Clean Git rebase workflow
+* Boundary testing (69 vs 70 threshold protection)
+* Built-in `unittest` regression suite
+* Clean Git commit discipline
 * No framework bloat
 * Controlled scope iteration
 
 ---
 
-## Engineering Principles
+## 🧪 Deterministic Testing Layer (Day 5)
+
+Added unit tests using Python’s built-in `unittest` framework.
+
+### Protected Logic
+
+**Classifier Boundary Tests**
+
+* `risk_score >= 70` → HOT
+* `risk_score == 70` → HOT
+* `risk_score == 69` → WARM
+* `risk_score == 40` → WARM
+* `risk_score == 39` → COLD
+
+**Validation Failure Tests**
+
+* Missing key
+* Extra key
+* Non-integer `risk_score`
+* Out-of-range `risk_score`
+
+This ensures:
+
+* Business logic is regression-safe
+* Boundary errors are caught immediately
+* Deterministic layer remains stable
+* Tests run locally with:
+
+```
+python -m unittest
+```
+
+No pytest.
+No CI.
+No architectural refactor.
+
+Strict scope discipline.
+
+---
+
+## 📐 Engineering Principles
 
 * LLMs interpret — code enforces
 * Business rules must be deterministic
@@ -131,35 +183,38 @@ generate_reason()    → Deterministic explanation builder
 * Auditability over cleverness
 * No premature abstraction
 * Production-aligned iteration
+* Small controlled improvements
 
 ---
 
-## Status
+## 📅 Progress Log
 
 * Day 1 — OpenAI integration
 * Day 2 — Strict JSON validation boundary
 * Day 3 — Deterministic entropy control + token tracking
 * Day 4 — Hybrid architecture refactor (LLM extraction + rule engine)
+* Day 5 — Deterministic unit tests for classifier + validation
 
 System shipped and version-controlled.
 
 ---
 
-## Roadmap
+## 🛣 Roadmap
 
-* Unit tests for classifier boundary
-* JSON schema enforcement
-* Raw feature extraction scoring engine (full deterministic scoring)
-* Lead qualification system
+* Enum value enforcement (schema tightening)
+* Full deterministic scoring engine (LLM-free scoring path)
+* Lead qualification API
 * RAG systems
 * Deployment workflows
-* Drift monitoring & audit layers
+* Monitoring & drift detection
+* Audit logging layer
 
 ---
 
-## Author
+## 👤 Author
 
 **Rainiel Jhon Cantare**
 AI Engineer in Transition — Philippines
 
 Building layered, controlled AI systems.
+
