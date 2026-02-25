@@ -16,14 +16,14 @@ The goal is to treat LLMs as probabilistic components inside deterministic syste
 
 ## 🧠 Core Areas
 
-- Python engineering  
-- OpenAI API integrations  
-- Deterministic LLM control  
-- Structured output enforcement  
-- Hybrid AI + rule-based engines  
-- Token cost awareness  
-- Clean architecture & Git discipline  
-- Unit testing for business logic  
+* Python engineering
+* OpenAI API integrations
+* Deterministic LLM control
+* Structured output enforcement
+* Hybrid AI + rule-based engines
+* Token cost awareness
+* Clean architecture & Git discipline
+* Unit testing for business logic
 
 This is a build log of shipped systems — not tutorials.
 
@@ -31,9 +31,9 @@ This is a build log of shipped systems — not tutorials.
 
 ## 🗂 Repository Structure
 
-```
-
+```bash
 ai-engineer-journey/
+├── .github/
 ├── experiments/
 ├── projects/
 │   ├── 01-ai-chat-cli/
@@ -42,26 +42,33 @@ ai-engineer-journey/
 │   └── 04-rag-chatbot/
 ├── notes/
 └── README.md
-
-````
+```
 
 ---
 
-# 🚀 01 – OpenAI CLI Financial Classifier (Shipped)
+# 🚀 01 – OpenAI Financial Risk Classifier (Shipped)
 
-A structured CLI tool integrating with the OpenAI API to classify financial stability.
+A structured financial classification system integrating the OpenAI API within deterministic boundaries.
+
+Initially built as a CLI tool.
+Now exposed as a minimal FastAPI service.
 
 ---
 
 ## 🏗 Architectural Evolution
+
+---
 
 ### Version 1 — Direct LLM Classification
 
 LLM returned:
 
 ```json
-{ "category": "...", "reason": "..." }
-````
+{
+  "category": "...",
+  "reason": "..."
+}
+```
 
 **Risk:**
 Business logic lived inside the prompt.
@@ -72,13 +79,13 @@ Business logic lived inside the prompt.
 
 ---
 
-### Version 2 — Hybrid Architecture (Current)
+### Version 2 — Hybrid Deterministic Architecture (Current)
 
 LLM now returns structured features only:
 
 ```json
 {
-  "risk_score": int (0–100),
+  "risk_score": 0-100,
   "income_level": "low | medium | high",
   "dependency_load": "low | moderate | high",
   "savings_buffer": "low | moderate | high"
@@ -87,10 +94,10 @@ LLM now returns structured features only:
 
 Python enforces classification deterministically:
 
-```
->= 70  → HOT
-40–69  → WARM
-< 40   → COLD
+```text
+risk_score >= 70   → HOT
+risk_score 40–69   → WARM
+risk_score < 40    → COLD
 ```
 
 LLM does **not** control:
@@ -100,20 +107,82 @@ LLM does **not** control:
 * Boundary conditions
 * Business thresholds
 
-This creates a controlled hybrid system.
+This creates a controlled hybrid AI system.
 
 ---
 
-## 🧩 Current Architecture
+## 🌐 Version 3 — Service Layer (Day 6)
 
+The CLI system is now wrapped with a minimal FastAPI service.
+
+### Endpoint
+
+```http
+POST /classify
 ```
-main.py              → CLI orchestration
-openai_client.py     → API integration (deterministic, usage-aware)
+
+### Request
+
+```json
+{
+  "income": 50000,
+  "dependents": 2,
+  "savings": 100000
+}
+```
+
+### Response
+
+```json
+{
+  "category": "WARM",
+  "risk_score": 58,
+  "income_level": "medium",
+  "dependency_load": "moderate",
+  "savings_buffer": "moderate"
+}
+```
+
+### API Architecture
+
+```text
+api.py
+   ↓
+run_classification_pipeline()
+   ↓
+LLM feature extraction
+   ↓
+validate_features()
+   ↓
+classify_risk()
+   ↓
+Structured JSON response
+```
+
+The API layer is intentionally thin.
+
+* No business logic inside endpoint
+* No database
+* No middleware
+* No authentication
+* No async refactor
+* No overengineering
+
+Just a transport adapter.
+
+---
+
+## 🧩 Current System Components
+
+```text
+main.py              → CLI + pipeline orchestration
+api.py               → FastAPI transport layer
+openai_client.py     → OpenAI API integration (usage-aware)
 prompt_templates.py  → Strict JSON feature extraction contract
 validate_features()  → Schema enforcement boundary
 classify_risk()      → Deterministic decision engine
 generate_reason()    → Deterministic explanation builder
-test_classifier.py   → Deterministic unit test safety net
+test_classifier.py   → Deterministic regression safety net
 ```
 
 ---
@@ -124,11 +193,12 @@ test_classifier.py   → Deterministic unit test safety net
 * Strict JSON-only LLM contract
 * Schema validation boundary
 * Hybrid AI + deterministic rule engine
-* Transparent feature-based explanations
+* Transparent feature-based reasoning
 * Token usage monitoring
-* Boundary testing (69 vs 70 threshold protection)
+* Threshold protection testing (69 vs 70)
 * Built-in `unittest` regression suite
 * Clean Git commit discipline
+* Linear rebase workflow
 * No framework bloat
 * Controlled scope iteration
 
@@ -136,7 +206,7 @@ test_classifier.py   → Deterministic unit test safety net
 
 ## 🧪 Deterministic Testing Layer (Day 5)
 
-Added unit tests using Python’s built-in `unittest` framework.
+Unit tests implemented using Python’s built-in `unittest`.
 
 ### Protected Logic
 
@@ -155,20 +225,15 @@ Added unit tests using Python’s built-in `unittest` framework.
 * Non-integer `risk_score`
 * Out-of-range `risk_score`
 
-This ensures:
+Run locally:
 
-* Business logic is regression-safe
-* Boundary errors are caught immediately
-* Deterministic layer remains stable
-* Tests run locally with:
-
-```
-python -m unittest
+```bash
+python test_classifier.py
 ```
 
 No pytest.
 No CI.
-No architectural refactor.
+No architectural drift.
 
 Strict scope discipline.
 
@@ -193,21 +258,25 @@ Strict scope discipline.
 * Day 2 — Strict JSON validation boundary
 * Day 3 — Deterministic entropy control + token tracking
 * Day 4 — Hybrid architecture refactor (LLM extraction + rule engine)
-* Day 5 — Deterministic unit tests for classifier + validation
+* Day 5 — Deterministic unit tests (classifier + validation)
+* Day 6 — FastAPI service layer (CLI → API transition)
 
-System shipped and version-controlled.
+System shipped.
+Version-controlled.
+Deterministic core protected.
 
 ---
 
 ## 🛣 Roadmap
 
 * Enum value enforcement (schema tightening)
-* Full deterministic scoring engine (LLM-free scoring path)
+* Fully deterministic scoring engine (LLM-free fallback path)
 * Lead qualification API
 * RAG systems
 * Deployment workflows
 * Monitoring & drift detection
 * Audit logging layer
+* Production CI pipeline
 
 ---
 
@@ -216,5 +285,6 @@ System shipped and version-controlled.
 **Rainiel Jhon Cantare**
 AI Engineer in Transition — Philippines
 
-Building layered, controlled AI systems.
+Building layered, controlled, production-aligned AI systems.
 
+---
