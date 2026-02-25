@@ -46,6 +46,41 @@ def generate_reason(features: dict, category: str) -> str:
         f"Savings buffer: {features['savings_buffer']}"
     )
 
+def run_classification_pipeline(
+    monthly_income: float,
+    dependents: int,
+    current_savings: float
+) -> dict:
+    """
+    Orchestrates full classification pipeline and returns structured result.
+    """
+
+    # 1. Build prompt
+    prompt = build_classification_prompt(
+        monthly_income=monthly_income,
+        dependents=dependents,
+        current_savings=current_savings
+    )
+
+    # 2. Call LLM
+    result = get_openai_response(prompt)
+    raw_response = result["content"]
+
+    # 3. Validate structured output
+    features = validate_features(raw_response)
+
+    # 4. Deterministic classification
+    category = classify_risk(features["risk_score"])
+
+    # 5. Return structured response
+    return {
+        "category": category,
+        "risk_score": features["risk_score"],
+        "income_level": features["income_level"],
+        "dependency_load": features["dependency_load"],
+        "savings_buffer": features["savings_buffer"]
+    }
+
 def main() -> None:
     """
     Collect user input, send to OpenAI, and print classification result.
@@ -58,36 +93,21 @@ def main() -> None:
         print("Invalid input. Please enter numeric values.")
         return
 
-    prompt = build_classification_prompt(
-        monthly_income=monthly_income,
-        dependents=dependents,
-        current_savings=current_savings
-    )
-
-    result = get_openai_response(prompt)
-    raw_response = result["content"]
-
     try:
-        features = validate_features(raw_response)
+        result = run_classification_pipeline(
+            monthly_income,
+            dependents,
+            current_savings
+    )
     except ValueError as e:
         print("\n❌ Model returned invalid structured output.")
         print("Error:", str(e))
         return
 
-    category = classify_risk(features["risk_score"])
-    reason = generate_reason(features, category)
-
     print("\n=== Classification Result ===")
-    print(f"Category : {category}")
-    print(f"Reason   : {reason}")
+    print(f"Category : {result['category']}")
+    print(f"Risk Score : {result['risk_score']}")
     print("=============================\n")
-
-    print("\n--- Token Usage ---")
-    print(f"Prompt Tokens     : {result['usage']['prompt_tokens']}")
-    print(f"Completion Tokens : {result['usage']['completion_tokens']}")
-    print(f"Total Tokens      : {result['usage']['total_tokens']}")
-    print("-------------------\n")
-
 
 if __name__ == "__main__":
     main()
