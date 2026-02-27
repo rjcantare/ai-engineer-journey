@@ -1,3 +1,4 @@
+---
 
 # AI Engineer Journey
 
@@ -18,48 +19,17 @@ This repo is a build log of shipped systems — not tutorials.
 
 ---
 
-## Core Engineering Focus
+# Week 1 — Deterministic Financial AI System
 
-* Python backend engineering
-* OpenAI API integrations
-* Deterministic LLM control
-* Structured JSON enforcement
-* Hybrid AI + rule-based systems
-* Token cost awareness
-* Clean architecture & Git discipline
-* Unit testing for business logic
+Built a structured financial risk classification system integrating OpenAI inside strict deterministic boundaries.
+
+LLM is used for structured feature extraction — not decision-making.
 
 ---
 
-## Repository Structure
+## Architecture Evolution
 
-```bash
-ai-engineer-journey/
-├── .github/
-├── experiments/
-├── projects/
-│   ├── 01-ai-chat-cli/
-│   ├── 02-lead-qualifier-api/
-│   ├── 03-pdf-extractor/
-│   └── 04-rag-chatbot/
-├── notes/
-└── README.md
-```
-
----
-
-# 01 – OpenAI Financial Risk Classifier (Shipped)
-
-A structured financial classification system integrating OpenAI inside deterministic boundaries.
-
-Originally built as a CLI tool.
-Now exposed via a minimal FastAPI service.
-
----
-
-## Architectural Evolution
-
-### Version 1 — Direct LLM Classification
+### Phase 1 — Direct LLM Classification
 
 LLM returned:
 
@@ -78,7 +48,7 @@ Problem:
 
 ---
 
-### Version 2 — Hybrid Deterministic Architecture (Current)
+### Phase 2 — Hybrid Deterministic Architecture (Current)
 
 LLM now returns structured features only:
 
@@ -91,178 +61,37 @@ LLM now returns structured features only:
 }
 ```
 
-Classification is enforced in Python:
+Classification enforced in Python:
 
 ```
-risk_score >= 70   → HOT
-risk_score 40–69   → WARM
-risk_score < 40    → COLD
+risk_score >= 70  → HOT
+risk_score 40–69  → WARM
+risk_score < 40   → COLD
 ```
 
 LLM does not control:
 
 * Final decision
-* Thresholds
-* Boundary conditions
+* Threshold logic
 * Business rules
+* Boundary conditions
 
 Result: Controlled hybrid AI system.
 
 ---
 
-## Service Layer (FastAPI)
+## Engineering Foundations Established
 
-### Endpoint
-
-```
-POST /classify
-```
-
-### Request
-
-```json
-{
-  "income": 50000,
-  "dependents": 2,
-  "savings": 100000
-}
-```
-
-### Response
-
-```json
-{
-  "category": "WARM",
-  "risk_score": 58,
-  "income_level": "medium",
-  "dependency_load": "moderate",
-  "savings_buffer": "moderate"
-}
-```
-
-### Execution Flow
-
-```
-api.py
-  ↓
-run_classification_pipeline()
-  ↓
-LLM feature extraction
-  ↓
-validate_features()
-  ↓
-classify_risk()
-  ↓
-Structured JSON response
-```
-
-The API layer is intentionally thin.
-
-No business logic inside endpoint.
-No middleware.
-No authentication.
-No overengineering.
-
-Transport adapter only.
-
----
-
-## System Components
-
-```
-main.py              → CLI + pipeline orchestration
-api.py               → FastAPI transport boundary
-openai_client.py     → OpenAI integration
-prompt_templates.py  → Strict JSON contract
-validate_features()  → Schema enforcement
-classify_risk()      → Deterministic decision engine
-generate_reason()    → Deterministic explanation builder
-test_classifier.py   → Regression safety net
-```
-
----
-
-## Engineering Highlights
-
-* `temperature=0.0` for deterministic extraction
+* OpenAI API integration
 * Strict JSON-only LLM contract
 * Schema validation boundary
-* Hybrid AI + rule engine design
+* Deterministic rule engine
+* `temperature=0.0` extraction
 * Token usage tracking
-* Threshold boundary tests (69 vs 70)
-* Built-in `unittest` suite
+* Unit tests for boundary protection
+* FastAPI transport layer
+* Controlled HTTP failure mapping
 * Linear Git rebase workflow
-* Controlled scope iteration
-
----
-
-## Deterministic Testing Layer
-
-Unit tests protect:
-
-### Classifier Boundaries
-
-* `>= 70` → HOT
-* `70` → HOT
-* `69` → WARM
-* `40` → WARM
-* `39` → COLD
-
-### Validation Failures
-
-* Missing key
-* Extra key
-* Non-integer `risk_score`
-* Out-of-range `risk_score`
-
-Run locally:
-
-```bash
-python test_classifier.py
-```
-
-No pytest.
-No CI.
-No framework bloat.
-
----
-
-## API Failure Mapping (Production Hygiene)
-
-Controlled HTTP semantics:
-
-* `200` → Success
-* `422` → Validation error
-* `503` → OpenAI dependency failure
-* `500` → Unexpected internal error
-
-No stack traces leaked.
-No provider details exposed.
-Business logic untouched.
-
----
-
-## Engineering Principles
-
-* LLMs interpret — code enforces
-* Deterministic business rules
-* Validate before execute
-* Boundaries must be tested
-* Auditability over cleverness
-* No premature abstraction
-* Small controlled iterations
-
----
-
-## Progress Log
-
-* Day 1 — OpenAI integration
-* Day 2 — Strict JSON validation boundary
-* Day 3 — Deterministic entropy control + token tracking
-* Day 4 — Hybrid architecture refactor
-* Day 5 — Deterministic unit tests
-* Day 6 — FastAPI service layer
-* Day 7 — Controlled API error handling
 
 System shipped.
 Version-controlled.
@@ -270,15 +99,121 @@ Deterministic core protected.
 
 ---
 
-## Roadmap
+# Day 8 — Financial-Domain RAG Core (Retrieval Layer)
 
-* Enum enforcement (schema tightening)
-* Deterministic scoring fallback (LLM-free mode)
-* Lead qualification API
-* RAG systems
-* Deployment workflows
-* Monitoring & drift detection
-* CI pipeline
+Implemented manual Retrieval-Augmented Generation mechanics.
+
+No frameworks.
+No vector database.
+No persistence.
+
+Understanding retrieval at the math layer first.
+
+---
+
+## Implementation Scope
+
+```
+01-ai-chat-cli/
+├── rag/
+│   ├── chunker.py
+│   ├── embedder.py
+│   ├── retriever.py
+│   └── __init__.py
+└── test_rag.py
+```
+
+---
+
+## Retrieval Design
+
+* Clean financial knowledge chunks (single concept each)
+* OpenAI embeddings (`text-embedding-3-small`)
+* In-memory vector store (Python list)
+* Manual cosine similarity
+* Top-1 retrieval
+* Deterministic scoring
+
+Embeddings computed once at initialization.
+Query embedding computed per request.
+
+---
+
+## Example Behavior
+
+Relevant query:
+
+> “How much emergency fund should someone have?”
+
+Similarity ≈ 0.66
+Correct financial chunk retrieved.
+
+Out-of-domain query:
+
+> “What is cryptocurrency?”
+
+Similarity ≈ 0.16
+Weak semantic match detected.
+
+Low similarity enables future threshold gating before LLM invocation.
+
+Retriever returns:
+
+```
+(chunk, similarity_score)
+```
+
+Decision logic intentionally separated from retrieval logic.
+
+---
+
+## Engineering Principles Reinforced
+
+* Separation of concerns
+* Deterministic retrieval math
+* Transparent similarity scoring
+* Threshold-ready architecture
+* No premature abstraction
+* No framework dependency
+
+---
+
+## Current System State
+
+✔ Deterministic financial classification engine
+✔ Manual RAG retrieval layer
+✔ Clean layered architecture
+✔ Debuggable similarity scoring
+✔ Ready for threshold integration
+✔ Ready for LLM answer generation layer
+
+---
+
+## Repository Structure
+
+```
+ai-engineer-journey/
+├── .github/
+├── experiments/
+├── projects/
+│   ├── 01-ai-chat-cli/
+│   ├── 02-lead-qualifier-api/
+│   ├── 03-pdf-extractor/
+│   └── 04-rag-chatbot/
+├── notes/
+└── README.md
+```
+
+---
+
+## Engineering Philosophy
+
+* LLMs interpret — code enforces
+* Deterministic business rules first
+* Validate before execute
+* Auditability over cleverness
+* Small controlled iterations
+* No framework dependency without understanding mechanics
 
 ---
 
